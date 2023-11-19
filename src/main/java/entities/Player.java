@@ -1,11 +1,14 @@
 package entities;
 
+import entities.operations.BettingOperation;
 import lombok.Data;
 import entities.operations.Operation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 public class Player {
@@ -57,8 +60,19 @@ public class Player {
     }
 
     public double getPlayerWinRate (){
-        double winPercentage = (this.numberOfWinningBets*100)/numberOfBets;
-        return winPercentage/100;
+        if (numberOfBets!=0 && numberOfWinningBets!=0 ){
+            double winPercentage = (this.numberOfWinningBets*100)/numberOfBets;
+            return winPercentage/100;
+        }
+        return 0;
+    }
+
+    public boolean checkIfPlayerAlreadyBetOnMatchWithID(UUID uuid){
+        List<BettingOperation> playerBettingOperations =
+                this.playerOperations.stream().filter(operation -> operation.getOperationType().equals("BET"))
+                        .map(operation -> (BettingOperation) operation)
+                        .collect(Collectors.toList());
+        return playerBettingOperations.stream().noneMatch(bettingOperation -> bettingOperation.getMatch().getId().equals(uuid));
     }
 
 

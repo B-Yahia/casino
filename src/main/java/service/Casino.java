@@ -29,13 +29,10 @@ public final class Casino {
 
     public void creditCasinoBalance( int creditAmount){
         this.balance+= creditAmount;
-        System.out.println("Casino has been credited the amount "+creditAmount);
     }
 
     public void debitCasinoBalance( int debitAmount){
         this.balance-= debitAmount;
-        System.out.println("Casino has been debited the amount "+debitAmount);
-        System.out.println("Balance now is " +balance);
     }
 
     public List<String> processOperations(List<String> playersData, List<Match> matches){
@@ -81,30 +78,31 @@ public final class Casino {
 
     private void processPlayerBettingOperation(List<Match> matches, String[] str, Player playerInRole) {
         int amount= Integer.parseInt(str[3]);
-        System.out.println("This is betting operation // Player Legitime " +playerInRole.isLegitimate()+"" +
-                " ,Player balance "+playerInRole.getBalance()+"" +
-                ",Amount of the bet"+amount);
         Match match = getTheMatchForBetting(str[2], matches);
         BettingOperation bettingOperation = new BettingOperation(amount,match,getPlayerSelectedSide(str[4]));
-        // add one more condition to not be on the same match twice
-        if (checkProcessLegality(playerInRole,bettingOperation,amount)){
-            playerInRole.increaseNumberOfBets();
-            playerInRole.debitPlayerAccount(amount);
-            creditCasinoBalance(amount);
-            switch (bettingOperation.getBettingResult()){
-                case WON -> {
-                    playerInRole.increaseNumWiningBets();
-                    debitCasinoBalance(amount);
-                    playerInRole.creditPlayerAccount(amount);
-                    debitCasinoBalance(bettingOperation.getGain());
-                    playerInRole.creditPlayerAccount(bettingOperation.getGain());
-                }
-                case NOT_COUNTED -> {
-                    debitCasinoBalance(amount);
-                    playerInRole.creditPlayerAccount(amount);
+        if (playerInRole.checkIfPlayerAlreadyBetOnMatchWithID(bettingOperation.getMatch().getId())){
+            if (checkProcessLegality(playerInRole,bettingOperation,amount)){
+                playerInRole.increaseNumberOfBets();
+                playerInRole.debitPlayerAccount(amount);
+                creditCasinoBalance(amount);
+                switch (bettingOperation.getBettingResult()){
+                    case WON -> {
+                        playerInRole.increaseNumWiningBets();
+                        debitCasinoBalance(amount);
+                        playerInRole.creditPlayerAccount(amount);
+                        debitCasinoBalance(bettingOperation.getGain());
+                        playerInRole.creditPlayerAccount(bettingOperation.getGain());
+                    }
+                    case NOT_COUNTED -> {
+                        debitCasinoBalance(amount);
+                        playerInRole.creditPlayerAccount(amount);
+                    }
                 }
             }
+        }else {
+            System.out.println("You already bet on the same match");
         }
+
         playerInRole.addOperation(bettingOperation);
     }
 
@@ -123,9 +121,6 @@ public final class Casino {
 
     private void processPlayerWithdrawOperation(String[] str, Player playerInRole) {
         int amount=Integer.parseInt(str[3]);
-        System.out.println("This is a withdraw operation // Player Legitime " +playerInRole.isLegitimate()+"" +
-                " ,Player balance "+playerInRole.getBalance()+"" +
-                ",Amount of the withdraw : "+amount);
         WithdrawalOperation withdrawalOperation = new WithdrawalOperation(amount);
         if (playerInRole.isLegitimate()){
             if (amount> playerInRole.getBalance()){
@@ -166,34 +161,4 @@ public final class Casino {
             throw new RuntimeException("Player selected option for the bet is not valid,Player can only select A or B");
         }
     }
-
-//if (playerInRole.isLegitimate()){
-//        if (amount> playerInRole.getBalance()){
-//            playerInRole.setLegitimate(false);
-//            bettingOperation.setLegal(false);
-//            playerInRole.addOperation(bettingOperation);
-//        }else {
-//            System.out.println(bettingOperation.getBettingResult());
-//            playerInRole.increaseNumberOfBets();
-//            playerInRole.debitPlayerAccount(amount);
-//            creditCasinoBalance(amount);
-//            if (bettingOperation.getBettingResult().equals(BettingResult.LOST)){
-//                playerInRole.addOperation(bettingOperation);
-//            }else if (bettingOperation.getBettingResult().equals(BettingResult.WON)){
-//                playerInRole.creditPlayerAccount(amount);
-//                playerInRole.increaseNumWiningBets();
-//                debitCasinoBalance(bettingOperation.getGain());
-//                playerInRole.creditPlayerAccount(bettingOperation.getGain());
-//                playerInRole.addOperation(bettingOperation);
-//            }else if (bettingOperation.getBettingResult().equals(BettingResult.NOT_COUNTED)){
-//                debitCasinoBalance(amount);
-//                playerInRole.creditPlayerAccount(amount);
-//                playerInRole.addOperation(bettingOperation);
-//            }
-//        }
-//    }else {
-//        bettingOperation.setLegal(false);
-//        playerInRole.addOperation(bettingOperation);
-//    }
-
 }
