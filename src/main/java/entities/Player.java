@@ -4,8 +4,9 @@ import entities.operations.BettingOperation;
 import lombok.Data;
 import entities.operations.Operation;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,9 +30,6 @@ public class Player {
     }
 
     public void debitPlayerAccount(int amount){
-        if (amount>this.balance){
-            System.out.println("this operation can not be made");
-        }
         this.balance-=amount;
     }
 
@@ -39,7 +37,7 @@ public class Player {
         this.balance+=amount;
     }
 
-    public void increaseNumWiningBets(){
+    public void increaseNumWinningBets(){
         this.numberOfWinningBets++;
     }
 
@@ -60,11 +58,11 @@ public class Player {
     }
 
     public double getPlayerWinRate (){
-        if (numberOfBets!=0 && numberOfWinningBets!=0 ){
-            double winPercentage = (this.numberOfWinningBets*100)/numberOfBets;
-            return winPercentage/100;
+        if (numberOfBets!=0){
+            BigDecimal rate = new BigDecimal((double) this.numberOfWinningBets/numberOfBets);
+            return rate.setScale(2, RoundingMode.DOWN).doubleValue();
         }
-        return 0;
+        return 0.00;
     }
 
     public boolean checkIfPlayerAlreadyBetOnMatchWithID(UUID uuid){

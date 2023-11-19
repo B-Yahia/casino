@@ -22,7 +22,7 @@ public class BettingOperation extends Operation{
         calculateGain();
         setOperationType();
     }
-    public void setOperationType(){
+    private void setOperationType(){
         setOperationType("BET");
     }
 
@@ -36,7 +36,7 @@ public class BettingOperation extends Operation{
         }
     }
 
-    public void calculateGain(){
+    private void calculateGain(){
         if (bettingResult.equals(BettingResult.WON)){
             if (playerSelectedSide.equals(MatchResult.A)){
                 this.gain= (int) (getAmount()*match.getSideAValue());

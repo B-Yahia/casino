@@ -18,14 +18,11 @@ public class Match {
     }
 
     private MatchResult convertStringToMatchResult(String finalResult) throws RuntimeException{
-        if(finalResult.equals("DRAW")){
-            return MatchResult.DRAW;
-        }else if (finalResult.equals("A")){
-            return MatchResult.A;
-        }else if (finalResult.equals("B")){
-            return MatchResult.B;
-        }else {
-            throw new RuntimeException(" The match final result value is invalid");
+        switch (finalResult){
+            case "DRAW" -> {return MatchResult.DRAW;}
+            case "A" -> {return MatchResult.A;}
+            case "B" -> {return MatchResult.B;}
+            default -> throw new RuntimeException(" The match final result value is invalid");
         }
     }
 }

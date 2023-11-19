@@ -27,13 +27,16 @@ public class Main {
         writeFile("Result.txt", results, mainClassPath, fileManager);
         System.out.println(mainClassPath);
         //the file Result will be in the path : pathToProjectOnYourComputer/PlaytechInternTask/target/classes/
+        for (String s : results){
+            System.out.println(s);
+        }
     }
 
     private static List<String> readFile(String fileName, LocalFileManager fileManager) {
         try {
             return fileManager.fileReader(fileName);
         } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+            System.out.println("Error reading file: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -42,7 +45,7 @@ public class Main {
         try {
             fileManager.fileWriter(fileName, data, path);
         } catch (IOException e) {
-            System.err.println("Error writing file: " + e.getMessage());
+            System.out.println("Error writing file: " + e.getMessage());
         }
     }
 }

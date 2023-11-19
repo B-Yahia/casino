@@ -37,16 +37,13 @@ public final class Casino {
 
     public List<String> processOperations(List<String> playersData, List<Match> matches){
         for (String playerData: playersData) {
-            int amount= 0;
             String [] str = playerData.split(",");
-            var playerInRole = players.stream().filter(player -> player.getId().equals(UUID.fromString(str[0]))).findFirst().get();
-            if (str[1].equals("DEPOSIT")) {
-                processPlayerDepositOperation(str, playerInRole);
-
-            }else if (str[1].equals("WITHDRAW")){
-                processPlayerWithdrawOperation(str, playerInRole);
-            }else if (str[1].equals("BET")){
-                processPlayerBettingOperation(matches, str, playerInRole);
+            Player playerInRole = players.stream().filter(player -> player.getId().equals(UUID.fromString(str[0]))).findFirst().get();
+            switch (str[1]){
+                case "DEPOSIT" -> processPlayerDepositOperation(str, playerInRole);
+                case "WITHDRAW"-> processPlayerWithdrawOperation(str, playerInRole);
+                case  "BET"-> processPlayerBettingOperation(matches, str, playerInRole);
+                default -> System.out.println("Operation type is invalid");
             }
         }
         return getFinalResultsInStringList();
@@ -68,8 +65,7 @@ public final class Casino {
     private void getResultForIllegalPlayers(List<String> results, Player p) {
         if (p.getPlayerFirstIllegalGame().getOperationType().equals("BET")){
             BettingOperation bettingOperation = (BettingOperation) p.getPlayerFirstIllegalGame();
-            results.add(p.getId()+" "+bettingOperation.getOperationType()+" "
-                    +bettingOperation.getMatch().getId()+" "+ p.getBalance()+" "+bettingOperation.getPlayerSelectedSide().toString());
+            results.add(p.getId()+" "+bettingOperation.getOperationType()+" "+bettingOperation.getMatch().getId()+" "+ p.getBalance()+" "+bettingOperation.getPlayerSelectedSide().toString());
         }else{
             results.add(p.getId()+" "+ p.getPlayerFirstIllegalGame().getOperationType()+" null "
                     + p.getBalance()+" null");
@@ -83,27 +79,33 @@ public final class Casino {
         if (playerInRole.checkIfPlayerAlreadyBetOnMatchWithID(bettingOperation.getMatch().getId())){
             if (checkProcessLegality(playerInRole,bettingOperation,amount)){
                 playerInRole.increaseNumberOfBets();
-                playerInRole.debitPlayerAccount(amount);
-                creditCasinoBalance(amount);
-                switch (bettingOperation.getBettingResult()){
-                    case WON -> {
-                        playerInRole.increaseNumWiningBets();
-                        debitCasinoBalance(amount);
-                        playerInRole.creditPlayerAccount(amount);
-                        debitCasinoBalance(bettingOperation.getGain());
-                        playerInRole.creditPlayerAccount(bettingOperation.getGain());
-                    }
-                    case NOT_COUNTED -> {
-                        debitCasinoBalance(amount);
-                        playerInRole.creditPlayerAccount(amount);
-                    }
-                }
+                transferFromPlayerBalanceToCasinoBalance(playerInRole, amount);
+                handleBettingOperation(playerInRole, amount, bettingOperation);
             }
-        }else {
-            System.out.println("You already bet on the same match");
+            playerInRole.addOperation(bettingOperation);
         }
+    }
 
-        playerInRole.addOperation(bettingOperation);
+    private void handleBettingOperation(Player playerInRole, int amount, BettingOperation bettingOperation) {
+        switch (bettingOperation.getBettingResult()){
+            case WON -> {
+                playerInRole.increaseNumWinningBets();
+                transferFromCasinoBalanceToPlayerBalance((amount + bettingOperation.getGain()), playerInRole);
+            }
+            case NOT_COUNTED -> {
+                transferFromCasinoBalanceToPlayerBalance(amount, playerInRole);
+            }
+        }
+    }
+
+    private void transferFromCasinoBalanceToPlayerBalance(int amount, Player playerInRole) {
+        debitCasinoBalance(amount);
+        playerInRole.creditPlayerAccount(amount);
+    }
+
+    private void transferFromPlayerBalanceToCasinoBalance(Player playerInRole, int amount) {
+        playerInRole.debitPlayerAccount(amount);
+        creditCasinoBalance(amount);
     }
 
     private boolean checkProcessLegality(Player player, BettingOperation operation, int amount){

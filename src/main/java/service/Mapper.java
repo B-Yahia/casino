@@ -12,8 +12,13 @@ public class Mapper {
     public List<Match> extractMatchesEntities(List<String> MatchesFileData){
         List<Match> matches = new ArrayList<>();
         for (String dataRow:MatchesFileData){
-            String[] s = dataRow.split(",");
-            matches.add(new Match(s[0],Float.parseFloat(s[1]),Float.parseFloat(s[2]),s[3]));
+            String[] matchData = dataRow.split(",");
+            if (matchData.length == 4) {
+                matches.add(new Match(matchData[0], Float.parseFloat(matchData[1]),
+                        Float.parseFloat(matchData[2]), matchData[3]));
+            } else {
+                throw new RuntimeException("Invalid match data format");
+            }
         }
         return matches;
     }
