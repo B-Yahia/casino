@@ -29,11 +29,11 @@ public final class Casino {
     }
 
     public void creditCasinoBalance( int creditAmount){
-        this.balance+= creditAmount;
+        balance+= creditAmount;
     }
 
     public void debitCasinoBalance( int debitAmount){
-        this.balance-= debitAmount;
+        balance-= debitAmount;
     }
 
     public List<String> processOperations(List<String> playersData, List<Match> matches){
@@ -67,7 +67,7 @@ public final class Casino {
             results.add("");
         }
 
-        results.add(String.valueOf(this.balance));
+        results.add(String.valueOf(balance));
         return results;
     }
 

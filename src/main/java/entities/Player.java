@@ -30,23 +30,23 @@ public class Player {
     }
 
     public void debitPlayerAccount(int amount){
-        this.balance-=amount;
+        balance-=amount;
     }
 
     public void creditPlayerAccount(int amount){
-        this.balance+=amount;
+        balance+=amount;
     }
 
     public void increaseNumWinningBets(){
-        this.numberOfWinningBets++;
+        numberOfWinningBets++;
     }
 
     public void increaseNumberOfBets(){
-        this.numberOfBets++;
+        numberOfBets++;
     }
 
     public void addOperation(Operation operation){
-        this.playerOperations.add(operation);
+        playerOperations.add(operation);
     }
 
     public Operation getPlayerFirstIllegalGame(){
@@ -59,7 +59,7 @@ public class Player {
 
     public double getPlayerWinRate (){
         if (numberOfBets!=0){
-            BigDecimal rate = new BigDecimal((double) this.numberOfWinningBets/numberOfBets);
+            BigDecimal rate = new BigDecimal((double) numberOfWinningBets/numberOfBets);
             return rate.setScale(2, RoundingMode.DOWN).doubleValue();
         }
         return 0.00;

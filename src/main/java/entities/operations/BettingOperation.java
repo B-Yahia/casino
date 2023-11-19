@@ -27,9 +27,9 @@ public class BettingOperation extends Operation{
     }
 
     private BettingResult getFinalBettingResult(){
-        if (this.match.getFinalResult().equals(MatchResult.DRAW)){
+        if (match.getFinalResult().equals(MatchResult.DRAW)){
             return BettingResult.NOT_COUNTED;
-        }else if(this.match.getFinalResult().equals(this.playerSelectedSide)){
+        }else if(match.getFinalResult().equals(playerSelectedSide)){
             return BettingResult.WON;
         }else {
             return BettingResult.LOST;
@@ -39,12 +39,12 @@ public class BettingOperation extends Operation{
     private void calculateGain(){
         if (bettingResult.equals(BettingResult.WON)){
             if (playerSelectedSide.equals(MatchResult.A)){
-                this.gain= (int) (getAmount()*match.getSideAValue());
+                gain= (int) (getAmount()*match.getSideAValue());
             }else {
-                this.gain= (int) (getAmount()*match.getSideBValue());
+                gain= (int) (getAmount()*match.getSideBValue());
             }
         }else {
-            this.gain=0;
+            gain=0;
         }
     }
 
