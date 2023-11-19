@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Player {
 
     private UUID id ;
-    private double balance ;
+    private long balance ;
     private boolean legitimate;
     private int numberOfBets;
     private int numberOfWinningBets;

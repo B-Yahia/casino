@@ -25,7 +25,6 @@ public class LocalFileManager {
             for (String line : content) {
                 writer.write(line);
                 writer.newLine();
-                writer.newLine();
             }
         }
     }

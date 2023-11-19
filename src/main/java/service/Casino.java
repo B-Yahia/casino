@@ -8,6 +8,7 @@ import entities.operations.DepositOperation;
 import entities.operations.WithdrawalOperation;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public final class Casino {
@@ -51,13 +52,21 @@ public final class Casino {
 
     private List<String> getFinalResultsInStringList() {
         List<String> results = new ArrayList<>();
-        for(Player p : players){
-            if (p.isLegitimate()){
-                results.add(p.getId()+" "+p.getBalance()+" "+p.getPlayerWinRate());
-            }else {
-                getResultForIllegalPlayers(results, p);
-            }
+        if (players.stream().anyMatch(player -> player.isLegitimate())){
+            players.stream()
+                    .filter(Player::isLegitimate)
+                    .forEach(p-> results.add(p.getId()+" "+p.getBalance()+" "+p.getPlayerWinRate()));
+        }else {
+            results.add("");
         }
+        if (players.stream().anyMatch(player -> !player.isLegitimate())){
+            players.stream()
+                    .filter(p -> !p.isLegitimate())
+                    .forEach(p -> getResultForIllegalPlayers(results, p));
+        }else {
+            results.add("");
+        }
+
         results.add(String.valueOf(this.balance));
         return results;
     }
