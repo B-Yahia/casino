@@ -25,11 +25,9 @@ public class Main {
 
         String mainClassPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         writeFile("Result.txt", results, mainClassPath, fileManager);
-        System.out.println(mainClassPath);
+//        System.out.println(mainClassPath);
         //the file Result will be in the path : pathToProjectOnYourComputer/PlaytechInternTask/target/classes/
-        for (String s : results){
-            System.out.println(s);
-        }
+
     }
 
     private static List<String> readFile(String fileName, LocalFileManager fileManager) {
